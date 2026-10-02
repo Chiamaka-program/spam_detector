@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Spam Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="card">
+        <h1>SMS / Email Spam Detector</h1>
+        <p class="sub">Paste a message and find out if it is spam.</p>
+
+        <form method="post">
+            <textarea name="message"
+                placeholder="e.g. Congratulations! You have won ₦500,000. Claim now...">{{ message }}</textarea>
+            <button type="submit">Check message</button>
+        </form>
+
+        {% if label %}
+        <div class="result {{ 'spam' if label == 'Spam' else 'ham' }}">
+            {{ label }}
+            <div class="small">Confidence: {{ '%.1f'|format(conf * 100) }}%</div>
+        </div>
+        {% endif %}
+
+        {% if history %}
+        <div class="hist">
+            <b>Recent checks</b>
+            {% for h in history %}
+            <div class="row">
+                <span class="tag {{ 'spam-text' if h.label == 'Spam' else 'ham-text' }}">{{ h.label }}</span>
+                {{ h.text[:80] }}{% if h.text|length > 80 %}...{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if has_matrix %}
+        <div class="hist">
+            <b>Model performance</b>
+            <img class="matrix" src="{{ url_for('static', filename='confusion_matrix.png') }}" alt="Confusion matrix">
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
